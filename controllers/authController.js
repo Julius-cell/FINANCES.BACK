@@ -16,8 +16,8 @@ exports.googleSignIn = async (req, res, next) => {
   const googleToken = req.body.token;
   try {
     const { name, email, picture } = await googleVerify(googleToken);
-    console.log(name, email, picture);
     const userDB = await User.findOne({email});
+    console.log(name, email, picture);
     let user;
     if (!userDB) {
       user = new User({
@@ -29,7 +29,7 @@ exports.googleSignIn = async (req, res, next) => {
         passwordConfirm: '@@@@@@@@'
       })
     } else {
-      user = useDB;
+      user = userDB;
       user.google = true;
     }
     // Save in DB
@@ -50,7 +50,7 @@ exports.googleSignIn = async (req, res, next) => {
   } catch (error) {
     const data = {
       message: error.name,
-      error: error.message
+      error: error.stack
     }
     sendResponse(data, 401, req, res);
   }

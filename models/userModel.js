@@ -7,11 +7,16 @@ const bcrypt = require('bcryptjs');
 const userSchema = Schema({
   name: {
     type: String,
-    required: [true, 'Please tell us your name!']
+    required: [true, 'Please tell us your name!'],
+    unique: true,
+    trim: true,
+    maxlength: [15, 'A User name must have less or equal then 15 characters'],
+    minlength: [4, 'A Tour name must have more or equal then 4 characters'],
   },
   email: {
     type: String,
     required: [true, 'Please provide your email'],
+    trim: true,
     unique: true,
     lowercase: true,
     validate: [validator.isEmail, 'Please provide a valid email']
