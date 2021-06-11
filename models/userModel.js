@@ -1,6 +1,5 @@
 const crypto = require('crypto');
 const { Schema, model } = require('mongoose');
-
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 
@@ -8,7 +7,7 @@ const userSchema = Schema({
   name: {
     type: String,
     required: [true, 'Please tell us your name!'],
-    unique: true,
+    unique: [true, 'This name is already taken'],
     trim: true,
     maxlength: [15, 'A User name must have less or equal then 15 characters'],
     minlength: [4, 'A Tour name must have more or equal then 4 characters'],
@@ -17,7 +16,7 @@ const userSchema = Schema({
     type: String,
     required: [true, 'Please provide your email'],
     trim: true,
-    unique: true,
+    unique: [true, 'This email is already used'],
     lowercase: true,
     validate: [validator.isEmail, 'Please provide a valid email']
   },
@@ -43,13 +42,13 @@ const userSchema = Schema({
   passwordConfirm: {
     type: String,
     required: [true, 'Please confirm your password'],
-    validate: {
-      // This only works on CREATE and SAVE!!!
-      validator: function (el) {
-        return el === this.password;
-      },
-      message: 'Passwords are not the same!'
-    }
+    // validate: {
+    //   // This only works on CREATE and SAVE!!!
+    //   validator: function (el) {
+    //     return el === this.password;
+    //   },
+    //   message: 'Passwords are not the same!'
+    // }
   },
   passwordChangedAt: Date,
   passwordResetToken: String,
@@ -123,6 +122,11 @@ userSchema.methods.createPasswordResetToken = function () {
 
   return resetToken;
 };
+
+userSchema.method('toJSON', function() {
+  const { __v, ...object } = this.toObject();
+  return object;
+})
 
 const User = model('User', userSchema);
 

@@ -11,13 +11,14 @@ const sendResponse = (data, statusCode, req, res) => {
   });
 };
 
-// TODO: Modificar el amnejo de errores (errorController) a las necesidades de la app
+// GOOGLE SIGN IN
+// TODO: Modificar el manejo de errores (errorController) a las necesidades de la app
 exports.googleSignIn = async (req, res, next) => {
   const googleToken = req.body.token;
   try {
     const { name, email, picture } = await googleVerify(googleToken);
+    // console.log(email);
     const userDB = await User.findOne({email});
-    console.log(name, email, picture);
     let user;
     if (!userDB) {
       user = new User({
@@ -26,27 +27,19 @@ exports.googleSignIn = async (req, res, next) => {
         photo: picture,
         google: true,
         password: '@@@@@@@@',
-        passwordConfirm: '@@@@@@@@'
+        passwordConfirm: '@@@@@@@@',
       })
     } else {
       user = userDB;
       user.google = true;
+      user.password = '@@@@@@@@';
+      user.passwordConfirm = '@@@@@@@@';
     }
     // Save in DB
     await user.save();
+    console.log('1', user);
     // Generate JWT - TOKEN
-    console.log(userDB);
     createSendToken(userDB, 200, req, res);
-    
-    // const data = {
-    //   message: 'Google SignIn',
-    //   user: {
-    //     name,
-    //     email,
-    //     picture
-    //   }
-    // }
-    // sendResponse(data, 200, req, res);
   } catch (error) {
     const data = {
       message: error.name,
