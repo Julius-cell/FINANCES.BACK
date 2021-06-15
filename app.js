@@ -12,7 +12,8 @@ const cors = require('cors');
 // FILES REQUIRED
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
-const usersRouter = require('./routes/userRoutes');
+const authRouter = require('./routes/authRoutes');
+const userRouter = require('./routes/userRoutes');
 
 
 
@@ -70,7 +71,8 @@ app.use(express.static('public'));
 
 
 // ----------------------- ROUTES ------------------------
-app.use('/', usersRouter);
+app.use('/v1/auth', authRouter);
+app.use('/v1/user', userRouter);
 // -------------------------------------------------------
 
 

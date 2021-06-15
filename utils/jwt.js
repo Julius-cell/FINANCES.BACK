@@ -6,8 +6,7 @@ const signToken = id => {
   });
 };
 
-const createSendToken = (user, statusCode, req, res) => {
-  // console.log(user);
+const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
 
   // USING COOKIES

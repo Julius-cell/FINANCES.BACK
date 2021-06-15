@@ -6,7 +6,7 @@ const handleCastErrorDB = err => {
 };
 
 const handleDuplicateFieldsDB = err => {
-  const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
+  const value = err.message.match(/(["'])(\\?.)*?\1/)[0];
 
   const message = `Duplicate field value: ${value}. Please use another value!`;
   return new AppError(message, 400);
@@ -27,15 +27,13 @@ const handleJWTExpiredError = () =>
 
 const sendErrorDev = (err, req, res) => {
   // A) API
-  if (req.originalUrl.startsWith('/api')) {
+  if (req.originalUrl.startsWith('/v1')) {
     return res.status(err.statusCode).json({
       status: err.status,
-      error: err,
       message: err.message,
       stack: err.stack
     });
   }
-
   // B) RENDERED WEBSITE
   console.error('ERROR 💥', err);
   return res.status(err.statusCode).render('error', {
@@ -46,7 +44,7 @@ const sendErrorDev = (err, req, res) => {
 
 const sendErrorProd = (err, req, res) => {
   // A) API
-  if (req.originalUrl.startsWith('/api')) {
+  if (req.originalUrl.startsWith('/v1')) {
     // A) Operational, trusted error: send message to client
     if (err.isOperational) {
       return res.status(err.statusCode).json({
@@ -63,7 +61,6 @@ const sendErrorProd = (err, req, res) => {
       message: 'Something went very wrong!'
     });
   }
-
   // B) RENDERED WEBSITE
   // A) Operational, trusted error: send message to client
   if (err.isOperational) {
@@ -83,14 +80,13 @@ const sendErrorProd = (err, req, res) => {
 };
 
 module.exports = (err, req, res, next) => {
-  // console.log(err.stack);
-
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
 
-  if (process.env.NODE_ENV === 'development') {
+  const env = process.env.NODE_ENV.trim();
+  if (env === 'development') {
     sendErrorDev(err, req, res);
-  } else if (process.env.NODE_ENV === 'production') {
+  } else if (env === 'production') {
     let error = { ...err };
     error.message = err.message;
 
