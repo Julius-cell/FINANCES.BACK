@@ -1,6 +1,7 @@
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('../utils/appError');
 const User = require('../models/userModel');
+const { createSendToken } = require('../utils/jwt');
 
 
 const filterObj = (obj, ...allowedFields) => {
@@ -39,13 +40,7 @@ exports.createUser = catchAsync(async (req, res, next) => {
     role: req.body.role,
   });
 
-  res.status(200).json({
-    status: 'success',
-    requestedAt: req.requestTime,
-    data: {
-      user,
-    },
-  });
+  createSendToken(user, 201, res);
 });
 
 
