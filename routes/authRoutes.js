@@ -4,7 +4,7 @@ const authController = require('../controllers/authController');
 const router = express.Router();
 
 
-// router.post('/signin', authController.);
+router.get('/renew', authController.protect, authController.renewToken);
 
 router.post('/login/google', authController.googleSignIn);
 

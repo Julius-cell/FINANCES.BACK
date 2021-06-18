@@ -19,7 +19,7 @@ exports.googleSignIn = async (req, res, next) => {
   try {
     const { name, email, picture } = await googleVerify(googleToken);
     // console.log(email);
-    const userDB = await User.findOne({email});
+    const userDB = await User.findOne({ email });
     let user;
     if (!userDB) {
       user = new User({
@@ -40,7 +40,7 @@ exports.googleSignIn = async (req, res, next) => {
     await user.save();
     console.log('1', user);
     // Generate JWT - TOKEN
-    createSendToken(userDB, 200, req, res);
+    createSendToken(userDB, 200, res);
   } catch (error) {
     const data = {
       message: error.name,
@@ -112,4 +112,10 @@ exports.protect = catchAsync(async (req, res, next) => {
   // GRANT ACCESS TO PROTECTED ROUTE
   req.user = freshUser;
   next();
+});
+
+exports.renewToken = catchAsync(async (req, res, next) => {
+  const user = req.user;
+  user.renew = true;
+  createSendToken(user, 200, res);
 });
