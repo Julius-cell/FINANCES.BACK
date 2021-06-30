@@ -14,6 +14,7 @@ const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const authRouter = require('./routes/authRoutes');
 const userRouter = require('./routes/userRoutes');
+const financeRouter = require('./routes/financeRoutes');
 
 
 
@@ -73,6 +74,7 @@ app.use(express.static('public'));
 // ----------------------- ROUTES ------------------------
 app.use('/v1/auth', authRouter);
 app.use('/v1/user', userRouter);
+app.use('/v1/finances', financeRouter);
 // -------------------------------------------------------
 
 
