@@ -50,6 +50,10 @@ const userSchema = new Schema({
     //   message: 'Passwords are not the same!'
     // }
   },
+  accounts: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Finance'
+  }],
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
