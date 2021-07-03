@@ -21,13 +21,18 @@ exports.allAccounts = catchAsync(async (req, res, next) => {
   });
 });
 
-
+/**
+ * Creates an account and save the id to create a reference for his user.
+ * @param id - logged user Id
+ * @body {} - object with incomes and expenses
+ */
 exports.createAccount = catchAsync(async (req, res, next) => {
   const accountData = req.body;
   const userId = req.params.id;
   const account = await Finance.create({
     incomes: accountData.incomes,
     expenses: accountData.expenses,
+    creationDate: Date.now()
   });
   const user = await User.findByIdAndUpdate(userId,
     { $push: { accounts: account._id}}, 
@@ -49,43 +54,39 @@ exports.createAccount = catchAsync(async (req, res, next) => {
 
 
 exports.getAccount = catchAsync(async (req, res, next) => {
-  // TODO: Get account by user logged
-  // const account = await Finance.find();
-  // if (!account) {
-  //   return next(new AppError('An error occurred while trying to request the data', 500));
-  // }
+  const account = await Finance.findById(req.params.id);
+  if (!account) {
+    return next(new AppError('An error occurred while trying to request the data', 500));
+  }
 
   res.status(200).json({
     status: 'success',
     requestedAt: req.requestTime,
-    data: 'Get Account not finished',
+    data: {
+      account
+    },
   });
 });
 
-exports.addIncome = catchAsync(async (req, res, next) => {
-  // TODO: Add Income to the account of the user logged
-  // const accounts = await Finance.find();
-  // if (!accounts) {
-  //   return next(new AppError('An error occurred while trying to request the data', 500));
-  // }
+exports.updateAccount = catchAsync(async (req, res, next) => {
+  const accountData = req.body;
+  const accountId = req.params.id;
+  const account = await Finance.findByIdAndUpdate(accountId, {
+      incomes: accountData.incomes,
+      expenses: accountData.expenses,
+      modificationDate: Date.now()
+    },
+    { new: true }
+  );
+  if (!account) {
+    return next(new AppError('An error occurred while trying to request the data', 500));
+  }
 
   res.status(200).json({
     status: 'success',
     requestedAt: req.requestTime,
-    data: 'Add Income not finished',
-  });
-});
-
-exports.addExpense = catchAsync(async (req, res, next) => {
-  // TODO: Add expense to the account of the user logged
-  // const accounts = await Finance.find();
-  // if (!accounts) {
-  //   return next(new AppError('An error occurred while trying to request the data', 500));
-  // }
-
-  res.status(200).json({
-    status: 'success',
-    requestedAt: req.requestTime,
-    data: 'Add Expense not finished',
+    data: {
+      account
+    }
   });
 });
