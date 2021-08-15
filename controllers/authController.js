@@ -5,7 +5,7 @@ const User = require('../models/userModel');
 const { createSendToken } = require('../utils/jwt');
 const jwt = require('jsonwebtoken');
 
-const sendResponse = (data, statusCode, req, res) => {
+const sendResponse = (data, statusCode, res) => {
   res.status(statusCode).json({
     status: 'success',
     data
@@ -46,7 +46,7 @@ exports.googleSignIn = async (req, res, next) => {
       message: error.name,
       error: error.stack
     }
-    sendResponse(data, 401, req, res);
+    sendResponse(data, 401, res);
   }
 };
 
@@ -118,4 +118,11 @@ exports.renewToken = catchAsync(async (req, res, next) => {
   const user = req.user;
   user.renew = true;
   createSendToken(user, 200, res);
+});
+
+exports.getUser = catchAsync(async (req, res, next) => {
+  const user = req.user;
+  const userPopulated = await User.findById(user._id).populate('accounts');
+  // createSendToken(user, 200, res);
+  sendResponse(userPopulated, 200, res);
 });
